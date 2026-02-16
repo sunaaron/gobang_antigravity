@@ -13,6 +13,7 @@ class NetworkManager:
         self.is_host = False
         self.on_data_received: Optional[Callable[[dict], None]] = None
         self.on_connection_established: Optional[Callable[[], None]] = None
+        self.on_connection_lost: Optional[Callable[[], None]] = None
         self.running = False
         
         # Discovery state
@@ -23,6 +24,8 @@ class NetworkManager:
 
     def start_server(self):
         """Starts a TCP server and listens for a single connection."""
+        self.stop() # Ensure previous session is fully cleaned up
+        
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server_socket.bind(('', self.port))
@@ -45,6 +48,8 @@ class NetworkManager:
         except Exception as e:
             print(f"Error accepting connection: {e}")
             self.running = False
+            if self.on_connection_lost:
+                self.on_connection_lost()
 
     def connect_to_server(self, host_ip: str):
         """Connects to a host server."""
@@ -63,6 +68,8 @@ class NetworkManager:
             return True
         except Exception as e:
             print(f"Failed to connect: {e}")
+            if self.on_connection_lost:
+                self.on_connection_lost()
             return False
 
     def _listen_for_data(self):
@@ -81,6 +88,10 @@ class NetworkManager:
                 print(f"Error receiving data: {e}")
                 self.running = False
                 break
+        
+        # When loop finishes (running=False or break), notify connection lost
+        if self.on_connection_lost:
+            self.on_connection_lost()
 
     def send_data(self, data: dict):
         """Sends a JSON-encoded dictionary to the connected peer."""

@@ -179,9 +179,9 @@ class Renderer:
         
         # In LAN mode, show waiting if peer name is just the default
         if state.game_mode == MODE_LAN:
-            # Robust check for default names
-            p1_default = p1_display.strip().lower() in ["player 1", "player 1", ""]
-            p2_default = p2_display.strip().lower() in ["player 2", "player 2", ""]
+            # Robust check for default names (case-insensitive)
+            p1_default = p1_display.strip().lower() in ["player 1", ""]
+            p2_default = p2_display.strip().lower() in ["player 2", ""]
             
             if state.player_color == PLAYER_BLACK and p2_default:
                 p2_display = "Waiting..."

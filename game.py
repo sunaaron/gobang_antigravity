@@ -20,6 +20,7 @@ class GobangGame:
         self.network_manager = NetworkManager()
         self.network_manager.on_data_received = self._on_remote_data_received
         self.network_manager.on_connection_established = self._on_connection_established
+        self.network_manager.on_connection_lost = self._on_connection_lost
         
         self.clock = pg.time.Clock()
         self.running = True
@@ -98,19 +99,19 @@ class GobangGame:
         show_new = not show_join and elapsed_time >= SCAN_TIMEOUT
 
         if show_new and self.renderer.lan_menu_buttons['new_game'].is_clicked(pos):
+            self.state.reset()
             self.network_manager.stop_discovery()
             self.network_manager.start_server()
             self.network_manager.start_discovery_beacon()
             self.state.player_color = PLAYER_BLACK
-            self.state.selected_name_index = 0
             self.state.game_state = STATE_NAME_INPUT
             print("Host started. Entering name selection.")
         elif show_join and 'join' in self.renderer.lan_menu_buttons and self.renderer.lan_menu_buttons['join'].is_clicked(pos):
             host_ip = list(found_hosts)[0]
             if self.network_manager.connect_to_server(host_ip):
+                self.state.reset()
                 self.network_manager.stop_discovery()
                 self.state.player_color = PLAYER_WHITE
-                self.state.selected_name_index = 0
                 self.state.game_state = STATE_NAME_INPUT
                 print(f"Joined host {host_ip}. Entering name selection.")
         elif self.renderer.lan_menu_buttons['back'].is_clicked(pos):
@@ -153,6 +154,12 @@ class GobangGame:
                 'state': self.state.get_state_data()
             })
             print("Host: Connection established. Initial state sent.")
+
+    def _on_connection_lost(self):
+        """Called when the LAN connection is dropped."""
+        print("LAN: Connection lost. Returning to main menu.")
+        self.network_manager.stop()
+        self.state.exit_to_menu()
 
     def _on_remote_data_received(self, data: dict):
         """Callback for receiving moves or state sync from the network."""

@@ -28,6 +28,7 @@ class GameState:
         self.undone_history.clear()
         self.current_turn = 0
         self.winner = None
+        self.player_names = {0: "Player 1", 1: "Player 2"}
 
     def exit_to_menu(self):
         self.reset()
