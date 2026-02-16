@@ -142,11 +142,15 @@ class Renderer:
             pg.draw.line(self.screen, (r, g, b), (0, y), (WIDTH, y))
 
     def draw_game(self, state: GameState, network_info: Optional[str] = None):
-        from constants import GRID_SIZE, CELL_SIZE, OFFSET, MODE_LAN, PLAYER_BLACK, PLAYER_WHITE
+        from constants import GRID_SIZE, CELL_SIZE, OFFSET, MODE_LAN, PLAYER_BLACK, PLAYER_WHITE, DARK_RED
         # Draw stones
         for stone in state.history:
             self.screen.blit(stone.image, stone.rect)
             
+        # Draw indicator for the latest move
+        if state.history:
+            last_stone = state.history[-1]
+            pg.draw.circle(self.screen, DARK_RED, last_stone.rect.center, 5)
         # Draw UI
         from constants import MODE_LAN
         visible_keys = []
@@ -192,10 +196,11 @@ class Renderer:
         name1_color = (220, 220, 220) if state.current_turn == 0 else (100, 100, 100)
         name2_color = WHITE if state.current_turn == 1 else (150, 150, 150)
         
-        name1 = self.font_medium.render(p1_display, True, name1_color)
-        name2 = self.font_medium.render(p2_display, True, name2_color)
-        self.screen.blit(name1, (745 - name1.get_width() // 2, 120))
-        self.screen.blit(name2, (745 - name2.get_width() // 2, 160))
+        if state.game_mode == MODE_LAN:
+            name1 = self.font_medium.render(p1_display, True, name1_color)
+            name2 = self.font_medium.render(p2_display, True, name2_color)
+            self.screen.blit(name1, (745 - name1.get_width() // 2, 120))
+            self.screen.blit(name2, (745 - name2.get_width() // 2, 160))
         
         # Authoritative Turn Indicator (at top center of board)
         current_name = state.player_names[state.current_turn]

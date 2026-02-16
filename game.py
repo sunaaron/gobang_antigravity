@@ -137,9 +137,13 @@ class GobangGame:
     def _handle_pvc_config_click(self, pos: Tuple[int, int]):
         if self.renderer.pvc_config_buttons['black'].is_clicked(pos):
             self.state.player_color = PLAYER_BLACK
+            self.state.player_names[PLAYER_BLACK] = "YOU"
+            self.state.player_names[PLAYER_WHITE] = "CPU"
             self.state.game_state = STATE_PLAYING
         elif self.renderer.pvc_config_buttons['white'].is_clicked(pos):
             self.state.player_color = PLAYER_WHITE
+            self.state.player_names[PLAYER_WHITE] = "YOU"
+            self.state.player_names[PLAYER_BLACK] = "CPU"
             self.state.game_state = STATE_PLAYING
             self.handle_cpu_move() # CPU starts as Black
         elif self.renderer.pvc_config_buttons['back'].is_clicked(pos):
