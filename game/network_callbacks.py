@@ -1,4 +1,4 @@
-from constants import STATE_NAME_INPUT, STATE_LAN_MENU, PLAYER_BLACK, PLAYER_WHITE
+from constants import STATE_NAME_INPUT, STATE_LAN_MENU, STATE_PLAYING, PLAYER_BLACK, PLAYER_WHITE
 
 def on_connection_established(game):
     """Called when a LAN connection is established (both host and client)."""
@@ -39,7 +39,6 @@ def on_remote_data_received(game, data: dict):
         bx, by = data['x'], data['y']
         print(f"Host: Received move from client: ({bx}, {by}). Current turn: {['BLACK','WHITE'][game.state.current_turn]}")
         if game.state.game_state == STATE_PLAYING:
-            from constants import STATE_PLAYING # Local import if needed
             stone_img = [game.black_img, game.white_img][game.state.current_turn]
             if game.state.place_stone(bx, by, stone_img):
                 print(f"Host: Successfully placed stone at ({bx}, {by}). Broadcasting authoritative state.")

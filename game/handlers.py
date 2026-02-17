@@ -1,6 +1,6 @@
 import time
 from typing import Tuple
-from constants import (STATE_MENU, STATE_PVC_CONFIG, STATE_LAN_MENU, STATE_PLAYING, 
+from constants import (STATE_MENU, STATE_PVC_CONFIG, STATE_LAN_MENU, STATE_PLAYING, STATE_NAME_INPUT,
                        MODE_PVP, MODE_PVC, MODE_LAN, PLAYER_BLACK, PLAYER_WHITE, 
                        OFFSET, CELL_SIZE, GRID_SIZE, SCAN_TIMEOUT, PREFILLED_NAMES)
 
